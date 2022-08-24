@@ -17,7 +17,7 @@ type -P smartctl &>/dev/null || bye smartctl is not available
 (( EUID )) && bye smartctl requires root permissions, run with sudo
 
 # If no args supplied, assume all disks.
-(( $# )) || set -- /dev/sd?
+(( $# )) || set -- /dev/sd? /dev/nvme?n?
 
 if type -P column &>/dev/null; then
     format() {
@@ -30,7 +30,7 @@ else
 fi
 
 for disk; do
-    [[ $disk == /dev/sd* ]] || continue
+    [[ $disk == /dev/* ]] || continue
 
     name=
     temp=
