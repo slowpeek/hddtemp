@@ -8,3 +8,7 @@
 
 - =smartctl= (=smartmontools= package)
 - =column= optional, for pretty formatted output (=bsdextrautils= package)
+
+* Thanks
+
+- /u/GuessWhat_InTheButt for [[https://www.reddit.com/r/Ubuntu/comments/wwspxu/comment/ilnnefs/][suggestion]]
