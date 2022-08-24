@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+# MIT license (c) 2022 https://github.com/slowpeek
+# Homepage: https://github.com/slowpeek/hddtemp
+
+set -eu
+
+# A very basic replacement for hddtemp tool missing from Ubuntu
+# 22.04. It requires smartctl (smartmontools package).
+
+bye() {
+    echo "$@" >&2
+    exit 1
+}
+
+type -P smartctl &>/dev/null || bye smartctl is not available
+(( EUID )) && bye smartctl requires root permissions, run with sudo
+
+# If no args supplied, assume all disks.
+(( $# )) || set -- /dev/sd?
+
+if type -P column &>/dev/null; then
+    format() {
+        column -t -s $'\t'
+    }
+else
+    format() {
+        tee
+    }
+fi
+
+for disk; do
+    [[ $disk == /dev/sd* ]] || continue
+
+    name=
+    temp=
+
+    readarray -t lines < <(smartctl -i -l scttempsts "$disk" 2>&1)
+    for line in "${lines[@]}"; do
+        case $line in
+            'Device Model:'*)
+                read -r _ _ name <<< "$line" ;;
+            'Current Temperature:'*)
+                read -r _ _ temp _ <<< "$line" ;;
+        esac
+    done
+
+    printf '%s:\t%s\t%s\n' "$disk" "${name:-?}" "${temp:-?}"
+done | format
