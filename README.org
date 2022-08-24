@@ -1,0 +1,5 @@
+* Usage
+
+- =hddtemp= :: Show temps for all disks. Internally it is the same as
+  running =hddtemp /dev/sd?=
+- =hddtemp /dev/sda ...= :: Show temps for selected disks
