@@ -4,6 +4,7 @@
 # Homepage: https://github.com/slowpeek/hddtemp
 
 set -eu
+shopt -s nullglob
 
 # A very basic replacement for hddtemp tool missing from Ubuntu
 # 22.04. It requires smartctl (smartmontools package).
