@@ -14,6 +14,33 @@ bye() {
     exit 1
 }
 
+usage() {
+    cat <<EOF
+Usage --
+
+${BASH_SOURCE[0]##*/}
+    show temps for all sd and nvme disks
+
+${BASH_SOURCE[0]##*/} /dev/sda ...
+    show temps for selected disks
+
+EOF
+    exit 0
+}
+
+opts=$(getopt -o h -l help -- "$@") || exit
+eval set -- "$opts"
+
+while (( $# )); do
+    case $1 in
+        -h|--help)
+            usage ;;
+        --)
+            shift
+            break ;;
+    esac
+done
+
 type -P smartctl &>/dev/null || bye smartctl is not available
 (( EUID )) && bye smartctl requires root permissions, run with sudo
 
