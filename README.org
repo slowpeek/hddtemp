@@ -1,13 +1,11 @@
 * Usage
 
-- =hddtemp= :: Show temps for all disks. Internally it is the same as
-  running =hddtemp /dev/sd? /dev/nvme?n?= with =nullglob= enabled.
-- =hddtemp /dev/sda ...= :: Show temps for selected disks
++ =hddtemp= :: Show temps for all =sd= and =nvme= disks.
++ =hddtemp /dev/sda ...= :: Show temps for selected disks
 
 * Requirements
 
 - =smartctl= (=smartmontools= package)
-- =column= optional, for pretty formatted output (=bsdextrautils= package)
 
 * Thanks
 

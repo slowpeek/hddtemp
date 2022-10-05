@@ -17,19 +17,10 @@ bye() {
 type -P smartctl &>/dev/null || bye smartctl is not available
 (( EUID )) && bye smartctl requires root permissions, run with sudo
 
-# If no args supplied, assume all disks.
+# If no args supplied, assume all sd and nvme disks.
 (( $# )) || set -- /dev/sd? /dev/nvme?n?
 
-if type -P column &>/dev/null; then
-    format() {
-        column -t -s $'\t'
-    }
-else
-    format() {
-        tee
-    }
-fi
-
+items=() l1=0 l2=1
 for disk; do
     [[ $disk == /dev/* ]] || continue
 
@@ -46,5 +37,10 @@ for disk; do
         esac
     done
 
-    printf '%s:\t%s\t%s\n' "$disk" "${name:-?}" "${temp:-?}"
-done | format
+    (( ${#disk} > l1 )) && l1=${#disk}
+    (( ${#name} > l2 )) && l2=${#name}
+
+    items+=("$disk:" "${name:-?}" "${temp:-?}")
+done
+
+printf "%-$((l1+1))s  %-${l2}s  %s\n" "${items[@]}"
