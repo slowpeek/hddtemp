@@ -15,13 +15,15 @@ bye() {
 }
 
 usage() {
+    local self=${BASH_SOURCE[0]##*/}
+
     cat <<EOF
 Usage --
 
-${BASH_SOURCE[0]##*/}
+${self}
     show temps for all sd and nvme disks
 
-${BASH_SOURCE[0]##*/} /dev/sda ...
+${self} /dev/sda ...
     show temps for selected disks
 
 EOF
