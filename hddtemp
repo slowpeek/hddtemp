@@ -9,16 +9,23 @@ shopt -s nullglob
 # A very basic replacement for hddtemp tool missing from Ubuntu
 # 22.04. It requires smartctl (smartmontools package).
 
+SCRIPT_VERSION=0.1
+
 bye() {
     echo "$@" >&2
     exit 1
+}
+
+version() {
+    echo "$SCRIPT_VERSION"
+    exit
 }
 
 usage() {
     local self=${BASH_SOURCE[0]##*/}
 
     cat <<EOF
-Usage --
+USAGE --
 
 ${self}
     show temps for all sd and nvme disks
@@ -26,17 +33,25 @@ ${self}
 ${self} /dev/sda ...
     show temps for selected disks
 
+Options:
+-h, --help                 Show usage
+-V, --version              Show version
+
+Homepage https://github.com/slowpeek/hddtemp
 EOF
-    exit 0
+
+    exit
 }
 
-opts=$(getopt -o h -l help -- "$@") || exit
+opts=$(getopt -o hV -l help,version -- "$@") || exit
 eval set -- "$opts"
 
 while (( $# )); do
     case $1 in
         -h|--help)
             usage ;;
+        -V|--version)
+            version ;;
         --)
             shift
             break ;;

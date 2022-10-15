@@ -3,6 +3,11 @@
 + =hddtemp= :: Show temps for all =sd= and =nvme= disks.
 + =hddtemp /dev/sda ...= :: Show temps for selected disks
 
+Options:
+
+- =-h, --help= :: Show usage
+- =-V, --version= :: Show version
+
 * Requirements
 
 - =smartctl= (=smartmontools= package)
