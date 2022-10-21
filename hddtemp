@@ -17,7 +17,7 @@ bye() {
 }
 
 version() {
-    echo "$SCRIPT_VERSION"
+    echo "hddtemp $SCRIPT_VERSION"
     exit
 }
 
