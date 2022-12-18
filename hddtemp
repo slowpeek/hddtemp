@@ -64,6 +64,39 @@ type -P smartctl &>/dev/null || bye smartctl is not available
 # If no args supplied, assume all sd and nvme disks.
 (( $# )) || set -- /dev/sd? /dev/nvme?n?
 
+temp_ata() {
+    local line
+
+    for line; do
+        if [[ $line == *'Temperature_Celsius'* ]]; then
+            read -r _ _ _ _ _ _ _ _ _ temp <<< "$line"
+            break
+        fi
+    done
+}
+
+temp_nvme() {
+    local line
+
+    for line; do
+        if [[ $line == 'Temperature:'* ]]; then
+            read -r _ temp <<< "$line"
+            break
+        fi
+    done
+}
+
+temp_scsi() {
+    local line
+
+    for line; do
+        if [[ $line == 'Current Drive Temperature:'* ]]; then
+            read -r _ _ _ temp <<< "$line"
+            break
+        fi
+    done
+}
+
 items=() l1=0 l2=1
 for disk; do
     [[ $disk == /dev/* ]] || continue
@@ -71,15 +104,27 @@ for disk; do
     name=
     temp=
 
-    readarray -t lines < <(smartctl -i -l scttempsts "$disk" 2>&1)
+    readarray -t lines < <(smartctl -i -A "$disk" 2>&1)
+
+    # There are three printers in smartctl overall: ataprint,
+    # nvmeprint, scsiprint. Leverage the output formats peculiarities.
     for line in "${lines[@]}"; do
         case $line in
             'Device Model:'*)
-                read -r _ _ name <<< "$line" ;;
-            'Current Temperature:'*)
-                read -r _ _ temp _ <<< "$line" ;;
+                read -r _ _ name <<< "$line"
+                temp_ata "${lines[@]}" ;;
+            'Model Number:'*)
+                read -r _ _ name <<< "$line"
+                temp_nvme "${lines[@]}" ;;
+            'Product:'*)
+                read -r _ name <<< "$line"
+                temp_scsi "${lines[@]}" ;;
         esac
     done
+
+    # Only keep the first number.
+    # Sample values: '31 (Min/Max 0/59)','29 C'
+    [[ -z ${temp-} ]] || temp=${temp%%[^0-9]*}
 
     (( ${#disk} > l1 )) && l1=${#disk}
     (( ${#name} > l2 )) && l2=${#name}
