@@ -43,27 +43,6 @@ EOF
     exit
 }
 
-opts=$(getopt -o hV -l help,version -- "$@") || exit
-eval set -- "$opts"
-
-while (( $# )); do
-    case $1 in
-        -h|--help)
-            usage ;;
-        -V|--version)
-            version ;;
-        --)
-            shift
-            break ;;
-    esac
-done
-
-type -P smartctl &>/dev/null || bye smartctl is not available
-(( EUID )) && bye smartctl requires root permissions, run with sudo
-
-# If no args supplied, assume all sd and nvme disks.
-(( $# )) || set -- /dev/sd? /dev/nvme?n?
-
 temp_ata() {
     local line
 
@@ -97,39 +76,70 @@ temp_scsi() {
     done
 }
 
-items=() l1=0 l2=1
-for disk; do
-    [[ $disk == /dev/* ]] || continue
+main() {
+    local opts
 
-    name=
-    temp=
+    # jetopt hhelp Vversion
+    opts=$(getopt -o hV -l help,version -- "$@") || exit
+    eval set -- "$opts"
 
-    readarray -t lines < <(smartctl -i -A "$disk" 2>&1)
-
-    # There are three printers in smartctl overall: ataprint,
-    # nvmeprint, scsiprint. Leverage the output formats peculiarities.
-    for line in "${lines[@]}"; do
-        case $line in
-            'Device Model:'*)
-                read -r _ _ name <<< "$line"
-                temp_ata "${lines[@]}" ;;
-            'Model Number:'*)
-                read -r _ _ name <<< "$line"
-                temp_nvme "${lines[@]}" ;;
-            'Product:'*)
-                read -r _ name <<< "$line"
-                temp_scsi "${lines[@]}" ;;
+    while (( $# )); do
+        case $1 in
+            -h|--help)
+                usage ;;
+            -V|--version)
+                version ;;
+            --)
+                shift
+                break ;;
         esac
     done
 
-    # Only keep the first number.
-    # Sample values: '31 (Min/Max 0/59)','29 C'
-    [[ -z ${temp-} ]] || temp=${temp%%[^0-9]*}
+    type -P smartctl &>/dev/null || bye smartctl is not available
+    (( EUID )) && bye smartctl requires root permissions, run with sudo
 
-    (( ${#disk} > l1 )) && l1=${#disk}
-    (( ${#name} > l2 )) && l2=${#name}
+    # If no args supplied, assume all sd and nvme disks.
+    (( $# )) || set -- /dev/sd? /dev/nvme?n?
 
-    items+=("$disk:" "${name:-?}" "${temp:-?}")
-done
+    local items=() l1=0 l2=1
+    local disk name temp lines line
+    for disk; do
+        [[ $disk == /dev/* ]] || continue
 
-printf "%-$((l1+1))s  %-${l2}s  %s\n" "${items[@]}"
+        name=
+        temp=
+
+        readarray -t lines < <(smartctl -i -A "$disk" 2>&1)
+
+        # There are three printers in smartctl overall: ataprint,
+        # nvmeprint, scsiprint. Leverage the output formats
+        # peculiarities.
+        for line in "${lines[@]}"; do
+            case $line in
+                'Device Model:'*)
+                    read -r _ _ name <<< "$line"
+                    temp_ata "${lines[@]}" ;;
+                'Model Number:'*)
+                    read -r _ _ name <<< "$line"
+                    temp_nvme "${lines[@]}" ;;
+                'Product:'*)
+                    read -r _ name <<< "$line"
+                    temp_scsi "${lines[@]}" ;;
+            esac
+        done
+
+        # Only keep the first number.
+        # Sample values: '31 (Min/Max 0/59)', '29 C'
+        [[ -z ${temp-} ]] || temp=${temp%%[^0-9]*}
+
+        # Collect max width of values.
+        (( ${#disk} > l1 )) && l1=${#disk}
+        (( ${#name} > l2 )) && l2=${#name}
+
+        items+=("$disk:" "${name:-?}" "${temp:-?}")
+    done
+
+    printf "%-$((l1+1))s  %-${l2}s  %s\n" "${items[@]}"
+}
+
+[[ ${BASH_SOURCE[0]} == "$0" ]] && main "$@"
