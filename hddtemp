@@ -102,7 +102,7 @@ main() {
     (( $# )) || set -- /dev/sd? /dev/nvme?n?
 
     local items=() l1=0 l2=1
-    local disk name temp lines line
+    local disk name temp lines line n
     for disk; do
         [[ $disk == /dev/* ]] || continue
 
@@ -114,17 +114,24 @@ main() {
         # There are three printers in smartctl overall: ataprint,
         # nvmeprint, scsiprint. Leverage the output formats
         # peculiarities.
+
+        n=0
         for line in "${lines[@]}"; do
+            ((++n))
+
             case $line in
                 'Device Model:'*)
                     read -r _ _ name <<< "$line"
-                    temp_ata "${lines[@]}" ;;
+                    temp_ata "${lines[@]:n}"
+                    break ;;
                 'Model Number:'*)
                     read -r _ _ name <<< "$line"
-                    temp_nvme "${lines[@]}" ;;
+                    temp_nvme "${lines[@]:n}"
+                    break ;;
                 'Product:'*)
                     read -r _ name <<< "$line"
-                    temp_scsi "${lines[@]}" ;;
+                    temp_scsi "${lines[@]:n}"
+                    break ;;
             esac
         done
 
