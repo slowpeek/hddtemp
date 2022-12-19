@@ -10,6 +10,7 @@ shopt -s nullglob
 # 22.04. It requires smartctl (smartmontools package).
 
 SCRIPT_VERSION=0.1+git
+SCRIPT_SELF=${BASH_SOURCE[0]##*/}
 
 bye() {
     echo "$@" >&2
@@ -17,20 +18,18 @@ bye() {
 }
 
 version() {
-    echo "hddtemp $SCRIPT_VERSION"
+    echo "$SCRIPT_SELF $SCRIPT_VERSION"
     exit
 }
 
 usage() {
-    local self=${BASH_SOURCE[0]##*/}
-
     cat <<EOF
 USAGE --
 
-${self}
+${SCRIPT_SELF}
     show temps for all sd and nvme disks
 
-${self} /dev/sda ...
+${SCRIPT_SELF} /dev/sda ...
     show temps for selected disks
 
 Options:
