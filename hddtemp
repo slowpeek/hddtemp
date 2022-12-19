@@ -12,8 +12,20 @@ shopt -s nullglob
 SCRIPT_VERSION=0.1+git
 SCRIPT_SELF=${BASH_SOURCE[0]##*/}
 
+t_red=$'\e[31m'
+t_yellow=$'\e[33m'
+t_reset=$'\e(B\e[m'
+
+_log() {
+    (( verb < $1 )) && return
+    echo "$2" "${@:3}" >&2
+}
+
+log_warn() { _log 2 "${t_yellow}warning:${t_reset}" "$@"; }
+log_err() { _log 1 "${t_red}error:${t_reset}" "$@"; }
+
 bye() {
-    echo "$@" >&2
+    log_err "$@"
     exit 1
 }
 
@@ -78,9 +90,11 @@ temp_scsi() {
 main() {
     local opts
 
-    # jetopt hhelp Vversion
-    opts=$(getopt -o hV -l help,version -- "$@") || exit
+    # jetopt hhelp q Vversion
+    opts=$(getopt -o hqV -l help,version -- "$@") || exit
     eval set -- "$opts"
+
+    local verb=2
 
     while (( $# )); do
         case $1 in
@@ -88,6 +102,9 @@ main() {
                 usage ;;
             -V|--version)
                 version ;;
+            -q)
+                (( --verb )) || verb=1
+                shift ;;
             --)
                 shift
                 break ;;
