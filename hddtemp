@@ -95,8 +95,8 @@ main() {
         esac
     done
 
-    type -P smartctl &>/dev/null || bye smartctl is not available
-    (( EUID )) && bye smartctl requires root permissions, run with sudo
+    type -P smartctl &>/dev/null || bye 'smartctl is not available'
+    (( EUID )) && bye 'smartctl requires root permissions, run with sudo'
 
     # If no args supplied, assume all sd and nvme disks.
     (( $# )) || set -- /dev/sd? /dev/nvme?n?
