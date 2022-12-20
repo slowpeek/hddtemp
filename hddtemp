@@ -114,6 +114,13 @@ main() {
     type -P smartctl &>/dev/null || bye 'smartctl is not available'
     (( EUID )) && bye 'smartctl requires root permissions, run with sudo'
 
+    # Check smartctl version for NVMe support.
+    local ver
+    read -r _ ver _ < <(smartctl -V)
+
+    [[ $ver == @([0-5].*|6.[0-4]*) ]] &&
+        log_warn "startctl supports NVMe devices since v6.5 (yours is v$ver)"
+
     # If no args supplied, assume all sd and nvme disks.
     (( $# )) || set -- /dev/sd? /dev/nvme?n?
 
