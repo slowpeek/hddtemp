@@ -9,6 +9,10 @@ Options:
 - =-q= :: Suppress warnings
 - =-V, --version= :: Show version
 
+Output is aligned into columns. Device models can contain spaces like
+/WDC WD10EFRX-68FYTN0/ or /Samsung SSD 950 PRO 256GB/ so fields are
+separated with at least two spaces.
+
 * Requirements
 
 - =smartctl= (=smartmontools= package)
