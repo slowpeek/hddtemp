@@ -173,4 +173,4 @@ main() {
     printf "%-$((l1+1))s  %-${l2}s  %s\n" "${items[@]}"
 }
 
-[[ ${BASH_SOURCE[0]} == "$0" ]] && main "$@"
+[[ ! ${BASH_SOURCE[0]} == "$0" ]] || main "$@"
