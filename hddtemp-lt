@@ -39,10 +39,10 @@ usage() {
 USAGE --
 
 ${SCRIPT_SELF}
-    show temps for all sd and nvme disks
+    Show temps for all sd and nvme disks
 
 ${SCRIPT_SELF} /dev/sda ...
-    show temps for selected disks
+    Show temps for selected disks
 
 Options:
 -h, --help                 Show usage
