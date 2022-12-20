@@ -12,6 +12,7 @@ Options:
 * Requirements
 
 - =smartctl= (=smartmontools= package)
+  - NVMe support: =smartctl= v6.5+
 
 * Thanks
 
