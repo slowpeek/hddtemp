@@ -46,6 +46,7 @@ ${SCRIPT_SELF} /dev/sda ...
 
 Options:
 -h, --help                 Show usage
+-q                         Suppress warnings
 -V, --version              Show version
 
 Homepage https://github.com/slowpeek/hddtemp

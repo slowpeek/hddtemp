@@ -6,6 +6,7 @@
 Options:
 
 - =-h, --help= :: Show usage
+- =-q= :: Suppress warnings
 - =-V, --version= :: Show version
 
 * Requirements
