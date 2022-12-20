@@ -18,6 +18,20 @@ separated with at least two spaces.
 - =smartctl= (=smartmontools= package)
   - NVMe support: =smartctl= v6.5+
 
+* Installation
+
+Fetch the archive either from releases or from the development branch
+and put =hddtemp-lt= under =/usr/local/bin/=
+
+In case you downloaded the script alone from github by a raw link, be
+sure to manually make it executable.
+
+If you'd like point a =hddtemp= symlink to it:
+
+#+begin_example
+  sudo ln -s /usr/local/bin/hddtemp{-lt,}
+#+end_example
+
 * Thanks
 
 - /u/GuessWhat_InTheButt for [[https://www.reddit.com/r/Ubuntu/comments/wwspxu/comment/ilnnefs/][suggestion]]
