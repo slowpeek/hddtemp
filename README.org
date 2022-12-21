@@ -29,7 +29,7 @@ sure to manually make it executable.
 If you'd like point a =hddtemp= symlink to it:
 
 #+begin_example
-  sudo ln -s /usr/local/bin/hddtemp{-lt,}
+  sudo ln -s hddtemp-lt /usr/local/bin/hddtemp
 #+end_example
 
 * Thanks
