@@ -15,6 +15,7 @@ SCRIPT_SELF=${BASH_SOURCE[0]##*/}
 t_red=$'\e[31m'
 t_yellow=$'\e[33m'
 t_reset=$'\e(B\e[m'
+verb=2
 
 _log() {
     (( verb < $1 )) && return
@@ -94,8 +95,6 @@ main() {
     # jetopt hhelp q Vversion
     opts=$(getopt -o hqV -l help,version -- "$@") || exit
     eval set -- "$opts"
-
-    local verb=2
 
     while (( $# )); do
         case $1 in
