@@ -20,8 +20,8 @@ separated with at least two spaces.
 
 * Installation
 
-Fetch the archive either from releases or from the development branch
-and put =hddtemp-lt= under =/usr/local/bin/=
+Fetch the archive either from releases or from the development branch,
+extract it and put =hddtemp-lt= under =/usr/local/bin/=
 
 In case you downloaded the script alone from github by a raw link, be
 sure to manually make it executable.
