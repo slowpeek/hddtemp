@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# MIT license (c) 2022 https://github.com/slowpeek
+# MIT license (c) 2022-2023 https://github.com/slowpeek
 # Homepage: https://github.com/slowpeek/hddtemp
 
 set -eu
