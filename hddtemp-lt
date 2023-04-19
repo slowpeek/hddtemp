@@ -6,8 +6,9 @@
 set -eu
 shopt -s nullglob
 
-# A very basic replacement for hddtemp tool missing from Ubuntu
-# 22.04. It requires smartctl (smartmontools package).
+# A very basic replacement for hddtemp tool removed from Ubuntu
+# repositories since 22.04. It requires smartctl (smartmontools
+# package).
 
 SCRIPT_VERSION=0.2+git
 SCRIPT_SELF=${BASH_SOURCE[0]##*/}
