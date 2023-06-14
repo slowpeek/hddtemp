@@ -6,9 +6,8 @@
 set -eu
 shopt -s nullglob
 
-# A very basic replacement for hddtemp tool removed from Ubuntu
-# repositories since 22.04. It requires smartctl (smartmontools
-# package).
+# A very basic replacement for hddtemp tool removed from Ubuntu repositories
+# since 22.04. It requires smartctl (smartmontools package).
 
 SCRIPT_VERSION=0.2+git
 SCRIPT_SELF=${BASH_SOURCE[0]##*/}
@@ -32,7 +31,7 @@ bye() {
 }
 
 version() {
-    echo "$SCRIPT_SELF $SCRIPT_VERSION"
+    echo "${SCRIPT_SELF} ${SCRIPT_VERSION}"
     exit
 }
 
@@ -43,7 +42,7 @@ USAGE --
 ${SCRIPT_SELF}
     Show temps for all sd and nvme disks
 
-${SCRIPT_SELF} /dev/sda ...
+${SCRIPT_SELF} /dev/sda ..
     Show temps for selected disks
 
 Options:
@@ -120,7 +119,7 @@ main() {
     read -r _ ver _ < <(smartctl -V)
 
     [[ $ver == @([0-5].*|6.[0-4]*) ]] &&
-        log_warn "startctl supports NVMe devices since v6.5 (yours is v$ver)"
+        log_warn "startctl supports NVMe devices since v6.5 (yours is v${ver})"
 
     # If no args supplied, assume all sd and nvme disks.
     (( $# )) || set -- /dev/sd? /dev/nvme?n?
@@ -135,9 +134,8 @@ main() {
 
         readarray -t lines < <(smartctl -i -A "$disk" 2>&1)
 
-        # There are three printers in smartctl overall: ataprint,
-        # nvmeprint, scsiprint. Leverage the output formats
-        # peculiarities.
+        # There are three printers in smartctl overall: ataprint, nvmeprint,
+        # scsiprint. Leverage the output formats peculiarities.
 
         n=0
         for line in "${lines[@]}"; do
@@ -159,7 +157,7 @@ main() {
             esac
         done
 
-        [[ -z $name ]] || "temp_$parser" "${lines[@]:n}"
+        [[ -z $name ]] || temp_"$parser" "${lines[@]:n}"
 
         # Only keep the first number.
         # Sample values: '31 (Min/Max 0/59)', '29 C'
@@ -169,7 +167,7 @@ main() {
         (( ${#disk} > l1 )) && l1=${#disk}
         (( ${#name} > l2 )) && l2=${#name}
 
-        items+=("$disk:" "${name:-?}" "${temp:-?}")
+        items+=("${disk}:" "${name:-?}" "${temp:-?}")
     done
 
     printf "%-$((l1+1))s  %-${l2}s  %s\n" "${items[@]}"

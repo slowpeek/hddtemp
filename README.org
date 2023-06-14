@@ -1,7 +1,7 @@
 * Usage
 
 + =hddtemp-lt= :: Show temps for all =sd= and =nvme= disks.
-+ =hddtemp-lt /dev/sda ...= :: Show temps for selected disks
++ =hddtemp-lt /dev/sda ..= :: Show temps for selected disks
 
 Options:
 
