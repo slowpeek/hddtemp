@@ -50,7 +50,7 @@ Options:
 -h, --help                 Show usage
 -q                         Suppress warnings
 -V, --version              Show version
--f                         Temperatures in Fahrenheit 
+-f                         Temperatures in Fahrenheit
 
 Homepage https://github.com/slowpeek/hddtemp
 EOF
@@ -169,7 +169,12 @@ main() {
         # Sample values: '31 (Min/Max 0/59)', '29 C'
         [[ -z ${temp-} ]] || temp=${temp%%[^0-9]*}
         if [[ $fahrenheit == 'yes' ]]; then
-            temp=$(echo "scale=2; (${temp} * 1.8)+32" | bc)
+			if command -v bc &> /dev/null; then
+            	temp=$(echo "scale=2; (${temp} * 1.8)+32" | bc)
+			else
+				echo "You need to install the 'bc' (binary calculator) to use the -f option"
+				exit
+			fi
         fi
 
         # Collect max width of values.
