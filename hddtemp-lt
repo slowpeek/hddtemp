@@ -50,6 +50,7 @@ Options:
 -h, --help                 Show usage
 -q                         Suppress warnings
 -V, --version              Show version
+-f                         Temperatures in Fahrenheit 
 
 Homepage https://github.com/slowpeek/hddtemp
 EOF
@@ -94,15 +95,19 @@ main() {
     local opts
 
     # jetopt hhelp q Vversion
-    opts=$(getopt -o hqV -l help,version -- "$@") || exit
+    opts=$(getopt -o hqVf -l help,version -- "$@") || exit
     eval set -- "$opts"
 
+    fahrenheit='no'
     while (( $# )); do
         case $1 in
             -h|--help)
                 usage ;;
             -V|--version)
                 version ;;
+            -f)
+                fahrenheit='yes'
+                shift ;;
             -q)
                 (( --verb )) || verb=1
                 shift ;;
@@ -163,6 +168,9 @@ main() {
         # Only keep the first number.
         # Sample values: '31 (Min/Max 0/59)', '29 C'
         [[ -z ${temp-} ]] || temp=${temp%%[^0-9]*}
+        if [[ $fahrenheit == 'yes' ]]; then
+            temp=$(echo "scale=2; (${temp} * 1.8)+32" | bc)
+        fi
 
         # Collect max width of values.
         (( ${#disk} > l1 )) && l1=${#disk}
