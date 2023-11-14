@@ -49,6 +49,7 @@ ${SCRIPT_SELF} /dev/sda ..
 Options:
 -h, --help                 Show usage
 -q                         Suppress warnings
+-u, --units=C|F            Use Celsius (default) or Fahrenheit scale
 -V, --version              Show version
 
 Homepage https://github.com/slowpeek/hddtemp
@@ -90,12 +91,23 @@ temp_scsi() {
     done
 }
 
+fah_temp() {
+    local r
+
+    (( temp = temp*18 + 320,
+       r = temp % 10,
+       temp /= 10,
+       r < 5 || temp++ ))
+}
+
 main() {
     local opts
 
-    # jetopt hhelp q Vversion
-    opts=$(getopt -o hqV -l help,version -- "$@") || exit
+    # jetopt hhelp q uunits: Vversion
+    opts=$(getopt -o hqu:V -l help,units:,version -- "$@") || exit
     eval set -- "$opts"
+
+    local units=C
 
     while (( $# )); do
         case $1 in
@@ -103,6 +115,14 @@ main() {
                 usage ;;
             -V|--version)
                 version ;;
+
+            -u|--units)
+                [[ $2 == @(C|F) ]] ||
+                    bye "The only valid values for $1 are 'C' and 'F'"
+
+                units=$2
+                shift 2 ;;
+
             -q)
                 (( --verb )) || verb=1
                 shift ;;
@@ -163,6 +183,9 @@ main() {
         # Only keep the first number.
         # Sample values: '31 (Min/Max 0/59)', '29 C'
         [[ -z ${temp-} ]] || temp=${temp%%[^0-9]*}
+
+        # Convert to Fahrenheit if asked.
+        [[ $units == C ]] || fah_temp
 
         # Collect max width of values.
         (( ${#disk} > l1 )) && l1=${#disk}
