@@ -24,8 +24,8 @@ Options:
 
 - =-h, --help= :: Show usage
 - =-q= :: Suppress warnings
+- ~-u, --units=C|F~ :: Use Celsius (default) or Fahrenheit scale
 - =-V, --version= :: Show version
-- =-f= :: Show Temperatures in Fahrenheit
 
 Output is aligned into columns. Device models can contain spaces like
 /WDC WD10EFRX-68FYTN0/ or /Samsung SSD 950 PRO 256GB/ so fields are
