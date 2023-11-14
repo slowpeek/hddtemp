@@ -145,10 +145,13 @@ main() {
     # If no args supplied, assume all sd and nvme disks.
     (( $# )) || set -- /dev/sd? /dev/nvme?n?
 
-    local items=() l1=0 l2=1
+    local items=() l_disk=0 l_name=1
     local disk name temp lines line n parser
     for disk; do
         [[ $disk == /dev/* ]] || continue
+
+        # Collect disk field's width
+        (( ${#disk} > l_disk )) && l_disk=${#disk}
 
         name=
         temp=
@@ -178,23 +181,26 @@ main() {
             esac
         done
 
-        [[ -z $name ]] || temp_"$parser" "${lines[@]:n}"
+        if [[ -n $name ]]; then
+            # Collect name field's width
+            (( ${#name} > l_name )) && l_name=${#name}
 
-        # Only keep the first number.
-        # Sample values: '31 (Min/Max 0/59)', '29 C'
-        [[ -z ${temp-} ]] || temp=${temp%%[^0-9]*}
+            temp_"$parser" "${lines[@]:n}"
 
-        # Convert to Fahrenheit if asked.
-        [[ $units == C ]] || fah_temp
+            if [[ -n $temp ]]; then
+                # Only keep the first number.
+                # Sample values: '31 (Min/Max 0/59)', '29 C'
+                temp=${temp%%[^0-9]*}
 
-        # Collect max width of values.
-        (( ${#disk} > l1 )) && l1=${#disk}
-        (( ${#name} > l2 )) && l2=${#name}
+                # Convert to Fahrenheit if asked.
+                [[ $units == C ]] || fah_temp
+            fi
+        fi
 
         items+=("${disk}:" "${name:-?}" "${temp:-?}")
     done
 
-    printf "%-$((l1+1))s  %-${l2}s  %s\n" "${items[@]}"
+    printf "%-$((l_disk+1))s  %-${l_name}s  %s\n" "${items[@]}"
 }
 
 [[ ! ${BASH_SOURCE[0]} == "$0" ]] || main "$@"
