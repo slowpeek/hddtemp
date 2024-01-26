@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# MIT license (c) 2022-2023 https://github.com/slowpeek
+# MIT license (c) 2022-2024 https://github.com/slowpeek
 # Homepage: https://github.com/slowpeek/hddtemp
 
 set -eu
@@ -10,7 +10,7 @@ shopt -s nullglob
 # repositories of Ubuntu (since 22.04) and Debian (since 12). It requires
 # smartctl (smartmontools package).
 
-SCRIPT_VERSION=0.2.1
+SCRIPT_VERSION=0.2.1+git
 SCRIPT_SELF=${BASH_SOURCE[0]##*/}
 
 t_red=$'\e[31m'
