@@ -128,7 +128,7 @@ main() {
         log_warn "startctl supports NVMe devices since v6.5 (yours is v${ver})"
 
     # If no args supplied, assume all sd and nvme disks.
-    (( $# )) || set -- /dev/sd? /dev/nvme?n?
+    (( $# )) || set -- /dev/sd? /dev/sd?[a-z] /dev/nvme?n?
 
     local items=() l_disk=0 l_name=1
     local disk name temp lines line i n parser
