@@ -47,6 +47,7 @@ ${SCRIPT_SELF} /dev/sda ..
     Show temps for selected disks
 
 Options:
+--classic                  Replicate output format of the original hddtemp
 -h, --help                 Show usage
 -q                         Suppress warnings
 -u, --units=C|F            Use Celsius (default) or Fahrenheit scale
@@ -88,11 +89,11 @@ fah_temp() {
 main() {
     local opts
 
-    # jetopt hhelp q uunits: Vversion
-    opts=$(getopt -o hqu:V -l help,units:,version -- "$@") || exit
+    # jetopt .classic hhelp q uunits: Vversion
+    opts=$(getopt -o hqu:V -l classic,help,units:,version -- "$@") || exit
     eval set -- "$opts"
 
-    local units=C
+    local units=C classic=n scale=
 
     while (( $# )); do
         case $1 in
@@ -100,6 +101,14 @@ main() {
                 usage ;;
             -V|--version)
                 version ;;
+
+            --classic)
+                classic=y
+
+                # Prepare the degree symbol in the current locale.
+                scale=$(iconv -f utf-8 <<< $'\xc2\xb0')
+
+                shift ;;
 
             -u|--units)
                 [[ $2 == @(C|F) ]] ||
@@ -116,6 +125,10 @@ main() {
                 break ;;
         esac
     done
+
+    if [[ $classic == y ]]; then
+        scale+=$units
+    fi
 
     type -P smartctl &>/dev/null || bye 'smartctl is not available'
     (( EUID )) && bye 'smartctl requires root permissions, run with sudo'
@@ -184,10 +197,14 @@ main() {
             done
         fi
 
-        items+=("${disk}:" "${name:-?}" "${temp:-?}")
+        items+=("${disk}:" "${name:-?}" "${temp:-?}" "${temp:+$scale}")
     done
 
-    printf "%-$((l_disk+1))s  %-${l_name}s  %s\n" "${items[@]}"
+    if [[ $classic = n ]]; then
+        printf "%-$((l_disk+1))s  %-${l_name}s  %s%s\n" "${items[@]}"
+    else
+        printf "%s %s: %s%s\n" "${items[@]}"
+    fi
 }
 
 [[ ! ${BASH_SOURCE[0]} == "$0" ]] || main "$@"

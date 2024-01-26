@@ -5,9 +5,9 @@ from the official repositories of Ubuntu (since 22.04) and Debian (since
 12). This tool can be used instead to print the temps:
 
 #+begin_example
-  $ sudo hddtemp-lt
-  /dev/sda:  WDC WD10EFRX-68FYTN0  28
-  /dev/sdb:  KINGSTON SHFS37A240G  30
+  > sudo hddtemp-lt
+  /dev/sda:      WDC WD10EFRX-68FYTN0       28
+  /dev/nvme0n1:  Samsung SSD 950 PRO 256GB  40
 #+end_example
 
 * Requirements
@@ -22,14 +22,28 @@ from the official repositories of Ubuntu (since 22.04) and Debian (since
 
 Options:
 
+- =--classic= :: Replicate output format of the original hddtemp
 - =-h, --help= :: Show usage
 - =-q= :: Suppress warnings
 - ~-u, --units=C|F~ :: Use Celsius (default) or Fahrenheit scale
 - =-V, --version= :: Show version
 
-Output is aligned into columns. Device models can contain spaces like
-/WDC WD10EFRX-68FYTN0/ or /Samsung SSD 950 PRO 256GB/ so fields are
+By default, output is aligned into columns. Device models can contain spaces
+like /WDC WD10EFRX-68FYTN0/ or /Samsung SSD 950 PRO 256GB/ so fields are
 separated with at least two spaces.
+
+When =--classic= is applied:
+- output is not aligned, fields are separated with a single space
+- there is a colon after disk models
+- scale marker is added
+
+Sample /classic/ output:
+
+#+begin_example
+  > sudo hddtemp-lt --classic
+  /dev/sda: WDC WD10EFRX-68FYTN0: 28°C
+  /dev/nvme0n1: Samsung SSD 950 PRO 256GB: 40°C
+#+end_example
 
 * Installation
 
