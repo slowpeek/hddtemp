@@ -104,10 +104,6 @@ main() {
 
             --classic)
                 classic=y
-
-                # Prepare the degree symbol in the current locale.
-                scale=$(iconv -f utf-8 <<< $'\xc2\xb0')
-
                 shift ;;
 
             -u|--units)
@@ -127,6 +123,10 @@ main() {
     done
 
     if [[ $classic == y ]]; then
+        # The degree symbol in the current locale.
+        scale=$(iconv -f utf-8 <<< $'\xc2\xb0')
+
+        # °C / °F
         scale+=$units
     fi
 
