@@ -62,6 +62,8 @@ EOF
 temp_ata() {
     if [[ $1 == *'Temperature_Celsius'* ]]; then
         read -r _ _ _ _ _ _ _ _ _ temp <<< "$1"
+    elif [[ $1 == *'Airflow_Temperature_Cel'* ]]; then
+        read -r _ _ _ _ _ _ _ _ _ temp <<< "$1"
     fi
 }
 
