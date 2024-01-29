@@ -60,21 +60,65 @@ EOF
 }
 
 temp_ata() {
-    if [[ $1 == *'Temperature_Celsius'* ]]; then
-        read -r _ _ _ _ _ _ _ _ _ temp <<< "$1"
-    fi
+    local line u=(0 0 0)
+
+    # Here we use logic from the drivetemp linux driver
+    # https://github.com/torvalds/linux/blob/v6.7/drivers/hwmon/drivetemp.c#L89-L95
+    #
+    # - SCT probe is the primary source
+    # - otherwise, use SMART attr 194
+    # - otherwise, use SMART attr 190
+    #
+    # 194/190 outliers gonna outlie.
+
+    for line; do
+        case $line in
+            '190 '*)
+                # attr 190
+                read -r _ _ _ _ _ _ _ _ _ 'u[2]' <<< "$line" ;;
+
+            '194 '*)
+                # attr 194
+                read -r _ _ _ _ _ _ _ _ _ 'u[1]' <<< "$line" ;;
+
+            'Current Temperature:'*)
+                # sct
+                read -r _ _ 'u[0]' _ <<< "$line" ;;
+        esac
+    done
+
+    local t
+    for t in "${u[@]}"; do
+        if [[ $t == [1-9]* ]]; then
+            # https://github.com/smartmontools/smartmontools/blob/RELEASE_7_4/smartmontools/atacmds.cpp#L2096-L2109
+            # https://github.com/smartmontools/smartmontools/blob/RELEASE_7_4/smartmontools/atacmds.cpp#L2115
+            temp=${t%%[^0-9]*}
+
+            return
+        fi
+    done
 }
 
 temp_nvme() {
-    if [[ $1 == 'Temperature:'* ]]; then
-        read -r _ temp <<< "$1"
-    fi
+    local line
+
+    for line; do
+        if [[ $line == 'Temperature:'* ]]; then
+            read -r _ temp _ <<< "$line"
+            break
+        fi
+    done
 }
 
 temp_scsi() {
-    if [[ $1 == 'Current Drive Temperature:'* ]]; then
-        read -r _ _ _ temp <<< "$1"
-    fi
+    local line
+
+    for line; do
+        if [[ $line == 'Current Drive Temperature:'* ]]; then
+            read -r _ _ _ temp _ <<< "$line"
+            break
+        fi
+    done
 }
 
 fah_temp() {
@@ -144,22 +188,20 @@ main() {
     (( $# )) || set -- /dev/sd? /dev/sd?[a-z] /dev/nvme?n?
 
     local items=() l_disk=0 l_name=1
-    local disk name temp lines line i n parser
+    local disk name temp lines line parser
     for disk; do
         [[ $disk == /dev/* ]] || continue
 
         # Collect disk field's width
         (( ${#disk} > l_disk )) && l_disk=${#disk}
 
-        readarray -t lines < <(smartctl -i -A "$disk" 2>&1)
+        readarray -t lines < <(smartctl -i -A -l scttempsts "$disk" 2>&1)
 
         # There are three printers in smartctl overall: ataprint, nvmeprint,
         # scsiprint. Leverage the output formats peculiarities.
 
         name=
-        for (( i=0, n=${#lines[@]}; i<n; i++ )); do
-            line=${lines[i]}
-
+        for line in "${lines[@]}"; do
             case $line in
                 'Device Model:'*)
                     read -r _ _ name <<< "$line"
@@ -181,20 +223,12 @@ main() {
             # Collect name field's width
             (( ${#name} > l_name )) && l_name=${#name}
 
-            for (( i++; i<n; i++ )); do
-                temp_"$parser" "${lines[i]}"
+            temp_"$parser" "${lines[@]}"
 
-                if [[ -n $temp ]]; then
-                    # Only keep the first number.
-                    # Sample values: '31 (Min/Max 0/59)', '29 C'
-                    temp=${temp%%[^0-9]*}
-
-                    # Convert to Fahrenheit if asked.
-                    [[ $units == C ]] || fah_temp
-
-                    break
-                fi
-            done
+            if [[ -n $temp ]]; then
+                # Convert to Fahrenheit if asked.
+                [[ $units == C ]] || fah_temp
+            fi
         fi
 
         items+=("${disk}:" "${name:-?}" "${temp:-?}" "${temp:+$scale}")
