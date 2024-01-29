@@ -58,3 +58,11 @@ If you'd like point a =hddtemp= symlink to it:
 #+begin_example
   sudo ln -s hddtemp-lt /usr/local/bin/hddtemp
 #+end_example
+
+* How to provide smartctl output samples
+
+No serial numbers, no time:
+
+#+begin_example
+  sudo smartctl -q noserial -i -A -l scttempsts /dev/sda | grep -v 'Local Time is'
+#+end_example
