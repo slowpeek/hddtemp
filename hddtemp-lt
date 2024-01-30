@@ -151,7 +151,7 @@ main() {
                 shift ;;
 
             -u|--units)
-                [[ $2 == @(C|F) ]] ||
+                [[ $2 == [CF] ]] ||
                     bye "The only valid values for $1 are 'C' and 'F'"
 
                 units=$2
