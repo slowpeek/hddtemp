@@ -13,9 +13,16 @@ shopt -s nullglob
 SCRIPT_VERSION=0.2.3+git
 SCRIPT_SELF=${BASH_SOURCE[0]##*/}
 
-t_red=$'\e[31m'
-t_yellow=$'\e[33m'
-t_reset=$'\e(B\e[m'
+if [[ -t 1 ]]; then
+    t_red=$'\e[31m'
+    t_yellow=$'\e[33m'
+    t_reset=$'\e(B\e[m'
+else
+    t_red=
+    t_yellow=
+    t_reset=
+fi
+
 verb=2
 
 _log() {
