@@ -8,7 +8,7 @@ shopt -s nullglob
 
 # A very basic replacement for hddtemp tool removed from the official
 # repositories of Ubuntu (since 22.04) and Debian (since 12). It requires
-# smartctl (smartmontools package).
+# smartctl from smartmontools package.
 
 SCRIPT_VERSION=0.2.3+git
 SCRIPT_SELF=${BASH_SOURCE[0]##*/}
@@ -45,20 +45,16 @@ version() {
 
 usage() {
     cat <<EOF
-USAGE --
+Usage: ${SCRIPT_SELF} [options] [disk1 ..]
 
-${SCRIPT_SELF}
-    Show temps for all sd and nvme disks
-
-${SCRIPT_SELF} /dev/sda ..
-    Show temps for selected disks
+Without any disk arguments, show temperature for all sd and nvme disks.
 
 Options:
---classic                  Replicate output format of the original hddtemp
--h, --help                 Show usage
--q                         Suppress warnings
--u, --units=C|F            Use Celsius (default) or Fahrenheit scale
--V, --version              Show version
+  --classic                  Replicate output format of the original hddtemp
+  -h, --help                 Show usage
+  -q                         Suppress warnings
+  -u, --units C|F            Use Celsius (default) or Fahrenheit scale
+  -V, --version              Show version
 
 Homepage https://github.com/slowpeek/hddtemp
 EOF

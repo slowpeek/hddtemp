@@ -12,20 +12,23 @@ from the official repositories of Ubuntu (since 22.04) and Debian (since
 
 * Requirements
 
-- =smartctl= (=smartmontools= package)
+- =smartctl= from =smartmontools= package
   - NVMe support: =smartctl= v6.5+
 
 * Usage
 
-+ =hddtemp-lt= :: Show temps for all =sd= and =nvme= disks.
-+ =hddtemp-lt /dev/sda ..= :: Show temps for selected disks
+#+begin_example
+  hddtemp-lt [options] [disk1 ..]
+#+end_example
 
-Options:
+Without any disk arguments, show temperature for all sd and nvme disks.
+
+* Options
 
 - =--classic= :: Replicate output format of the original hddtemp
 - =-h, --help= :: Show usage
 - =-q= :: Suppress warnings
-- ~-u, --units=C|F~ :: Use Celsius (default) or Fahrenheit scale
+- =-u, --units C|F= :: Use Celsius (default) or Fahrenheit scale
 - =-V, --version= :: Show version
 
 By default, output is aligned into columns. Device models can contain spaces
