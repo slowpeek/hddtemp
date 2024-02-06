@@ -10,7 +10,7 @@ shopt -s nullglob
 # repositories of Ubuntu (since 22.04) and Debian (since 12). It requires
 # smartctl (smartmontools package).
 
-SCRIPT_VERSION=0.2.3
+SCRIPT_VERSION=0.2.3+git
 SCRIPT_SELF=${BASH_SOURCE[0]##*/}
 
 t_red=$'\e[31m'
