@@ -10,7 +10,7 @@ shopt -s nullglob
 SCRIPT_VERSION=0.2.3+git
 SCRIPT_SELF=${BASH_SOURCE[0]##*/}
 
-if [[ -t 1 ]]; then
+if [[ -t 2 ]]; then
     t_red=$'\e[31m'
     t_yellow=$'\e[33m'
     t_reset=$'\e(B\e[m'
