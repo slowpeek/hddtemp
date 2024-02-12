@@ -2,13 +2,10 @@
 
 # MIT license (c) 2022-2024 https://github.com/slowpeek
 # Homepage: https://github.com/slowpeek/hddtemp
+# About: smartctl-based alternative to hddtemp
 
 set -eu
 shopt -s nullglob
-
-# A very basic replacement for hddtemp tool removed from the official
-# repositories of Ubuntu (since 22.04) and Debian (since 12). It requires
-# smartctl from smartmontools package.
 
 SCRIPT_VERSION=0.2.3+git
 SCRIPT_SELF=${BASH_SOURCE[0]##*/}
