@@ -23,7 +23,7 @@ fi
 verb=2
 
 _log() {
-    (( verb < $1 )) && return
+    (( verb >= $1 )) || return 0
     echo "$2" "${@:3}" >&2
 }
 
@@ -175,13 +175,13 @@ main() {
     fi
 
     type -P smartctl &>/dev/null || bye 'smartctl is not available'
-    (( EUID )) && bye 'smartctl requires root permissions, run with sudo'
+    (( ! EUID )) || bye 'smartctl requires root permissions, run with sudo'
 
     # Check smartctl version for NVMe support.
     local ver
     read -r _ ver _ < <(smartctl -V)
 
-    [[ $ver == @([0-5].*|6.[0-4]*) ]] &&
+    [[ ! $ver == @([0-5].*|6.[0-4]*) ]] ||
         log_warn "startctl supports NVMe devices since v6.5 (yours is v${ver})"
 
     # If no args supplied, assume all sd and nvme disks.
@@ -193,7 +193,7 @@ main() {
         [[ $disk == /dev/* ]] || continue
 
         # Collect disk field's width
-        (( ${#disk} > l_disk )) && l_disk=${#disk}
+        (( ${#disk} <= l_disk )) || l_disk=${#disk}
 
         readarray -t lines < <(smartctl -i -A -l scttempsts "$disk" 2>&1)
 
@@ -221,7 +221,7 @@ main() {
         temp=
         if [[ -n $name ]]; then
             # Collect name field's width
-            (( ${#name} > l_name )) && l_name=${#name}
+            (( ${#name} <= l_name )) || l_name=${#name}
 
             temp_"$parser" "${lines[@]}"
 
