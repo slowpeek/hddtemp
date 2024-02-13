@@ -64,8 +64,8 @@ If you'd like point a =hddtemp= symlink to it:
 
 * How to provide smartctl output samples
 
-No serial numbers, no time:
+No serial numbers, UTC time:
 
 #+begin_example
-  sudo smartctl -q noserial -i -A -l scttempsts /dev/sda | grep -v 'Local Time is'
+  sudo env TZ=UTC smartctl -q noserial -i -A -l scttempsts /dev/sda
 #+end_example
