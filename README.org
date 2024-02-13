@@ -50,17 +50,9 @@ Sample /classic/ output:
 
 * Installation
 
-Fetch the archive either from releases or from the development branch,
-extract it and put =hddtemp-lt= under =/usr/local/bin/=
-
-In case you downloaded the script alone from github by a raw link, be
-sure to manually make it executable.
-
-If you'd like point a =hddtemp= symlink to it:
-
-#+begin_example
-  sudo ln -s hddtemp-lt /usr/local/bin/hddtemp
-#+end_example
+Fetch the archive either from releases or from the development branch, extract
+it and put =hddtemp-lt= under =/usr/local/bin/=. In case you downloaded the
+script alone from github by a raw link, be sure to manually make it executable.
 
 * How to provide smartctl output samples
 
