@@ -56,8 +56,8 @@ script alone from github by a raw link, be sure to manually make it executable.
 
 * How to provide smartctl output samples
 
-No serial numbers, UTC time:
+No serial numbers, no time:
 
 #+begin_example
-  sudo env TZ=UTC smartctl -q noserial -i -A -l scttempsts /dev/sda
+  sudo smartctl -q noserial -i -A -l scttempsts /dev/sda | grep -v 'Local Time is'
 #+end_example
