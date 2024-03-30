@@ -5,7 +5,6 @@
 # About: smartctl-based alternative to hddtemp
 
 set -eu
-shopt -s nullglob
 
 SCRIPT_VERSION=0.2.3+git
 SCRIPT_SELF=${BASH_SOURCE[0]##*/}
@@ -185,7 +184,11 @@ main() {
         log_warn "startctl supports NVMe devices since v6.5 (yours is v${ver})"
 
     # If no args supplied, assume all sd and nvme disks.
-    (( $# )) || set -- /dev/sd? /dev/sd?[a-z] /dev/nvme?n?
+    if (( ! $# )); then
+        shopt -s nullglob
+        set -- /dev/sd? /dev/sd?[a-z] /dev/nvme?n?
+        shopt -u nullglob
+    fi
 
     local items=() l_disk=0 l_name=1
     local disk name temp lines line parser
