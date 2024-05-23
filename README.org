@@ -6,8 +6,8 @@ from the official repositories of Ubuntu (since 22.04) and Debian (since
 
 #+begin_example
   > sudo hddtemp-lt
-  /dev/sda:      WDC WD10EFRX-68FYTN0       28
-  /dev/nvme0n1:  Samsung SSD 950 PRO 256GB  40
+  /dev/sda:    WDC WD10EFRX-68FYTN0       28
+  /dev/nvme0:  Samsung SSD 950 PRO 256GB  40
 #+end_example
 
 * Requirements
@@ -45,7 +45,7 @@ Sample /classic/ output:
 #+begin_example
   > sudo hddtemp-lt --classic
   /dev/sda: WDC WD10EFRX-68FYTN0: 28°C
-  /dev/nvme0n1: Samsung SSD 950 PRO 256GB: 40°C
+  /dev/nvme0: Samsung SSD 950 PRO 256GB: 40°C
 #+end_example
 
 * Installation
