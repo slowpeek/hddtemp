@@ -186,7 +186,7 @@ main() {
     # If no args supplied, assume all sd and nvme disks.
     if (( ! $# )); then
         shopt -s nullglob
-        set -- /dev/sd? /dev/sd?[a-z] /dev/nvme?n?
+        set -- /dev/sd? /dev/sd?[a-z] /dev/nvme? /dev/nvme?[0-9]
         shopt -u nullglob
     fi
 
