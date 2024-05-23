@@ -150,9 +150,6 @@ main() {
                 shift ;;
 
             -u|--units)
-                [[ $2 == [CF] ]] ||
-                    bye "The only valid values for $1 are 'C' and 'F'"
-
                 units=$2
                 shift 2 ;;
 
@@ -165,6 +162,12 @@ main() {
         esac
     done
 
+    type -P smartctl &>/dev/null || bye 'smartctl is not available'
+    (( ! EUID )) || bye 'smartctl requires root permissions, run with sudo'
+
+    [[ $units == [CF] ]] ||
+        bye "The only allowed values for --units are 'C' and 'F'"
+
     if [[ $classic == y ]]; then
         # The degree symbol in the current locale.
         scale=$(iconv -f utf-8 <<< $'\xc2\xb0')
@@ -172,9 +175,6 @@ main() {
         # °C / °F
         scale+=$units
     fi
-
-    type -P smartctl &>/dev/null || bye 'smartctl is not available'
-    (( ! EUID )) || bye 'smartctl requires root permissions, run with sudo'
 
     # Check smartctl version for NVMe support.
     local ver
