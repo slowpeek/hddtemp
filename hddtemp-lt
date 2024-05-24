@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC1007
 
 # MIT license (c) 2022-2024 https://github.com/slowpeek
 # Homepage: https://github.com/slowpeek/hddtemp
@@ -34,6 +35,10 @@ bye() {
     exit 1
 }
 
+in_path() {
+    type -P -- "$1" >/dev/null
+}
+
 version() {
     echo "${SCRIPT_SELF} ${SCRIPT_VERSION}"
     exit
@@ -46,11 +51,16 @@ Usage: ${SCRIPT_SELF} [options] [disk1 ..]
 Without any disk arguments, show temperature for all sd and nvme disks.
 
 Options:
-  --classic                  Replicate output format of the original hddtemp
   -h, --help                 Show usage
   -q                         Suppress warnings
-  -u, --units C|F            Use Celsius (default) or Fahrenheit scale
   -V, --version              Show version
+
+  --classic                  Replicate output format of the original hddtemp
+  --hint path                Provide a file containing 'smartctl --scan-open'
+                             output as a hint for device types (-d option value
+                             for smartctl)
+
+  -u, --units C|F            Use Celsius (default) or Fahrenheit scale
 
 Homepage https://github.com/slowpeek/hddtemp
 EOF
@@ -129,14 +139,28 @@ fah_temp() {
        r < 5 || temp++ ))
 }
 
+# Parse 'smartctl --scan-open' output
+parse_hint() {
+    local -n ref=$1
+    local dev opt type
+
+    ref=()
+
+    while read -r dev opt type _; do
+        [[ $dev == /dev/* && $opt == -d && -n $type ]] || continue
+        # shellcheck disable=SC2034
+        ref[$dev]=$type
+    done
+}
+
 main() {
     local opts
 
-    # jetopt .classic hhelp q uunits: Vversion
-    opts=$(getopt -o hqu:V -l classic,help,units:,version -- "$@") || exit
+    # jetopt .classic .hint: hhelp q uunits: Vversion
+    opts=$(getopt -o hqu:V -l classic,hint:,help,units:,version -- "$@") || exit
     eval set -- "$opts"
 
-    local units=C classic=n scale=
+    local units=C classic=n scale= hint=
 
     while (( $# )); do
         case $1 in
@@ -148,6 +172,10 @@ main() {
             --classic)
                 classic=y
                 shift ;;
+
+            --hint)
+                hint=$2
+                shift 2 ;;
 
             -u|--units)
                 units=$2
@@ -162,11 +190,25 @@ main() {
         esac
     done
 
-    type -P smartctl &>/dev/null || bye 'smartctl is not available'
+    in_path smartctl || bye 'smartctl is not available'
     (( ! EUID )) || bye 'smartctl requires root permissions, run with sudo'
 
     [[ $units == [CF] ]] ||
         bye "The only allowed values for --units are 'C' and 'F'"
+
+    local -A hint_map=()
+    if [[ -n $hint ]]; then
+        [[ -e $hint ]] || bye "'${hint}' does not exist"
+        [[ -f $hint ]] || bye "'${hint}' is not a regular file"
+        [[ -r $hint ]] || bye "'${hint}' is not readable"
+
+        if in_path file; then
+            [[ $(file -bL "$hint") == *text* ]] ||
+                bye "'${hint}' is not a text file"
+        fi
+
+        parse_hint hint_map < "$hint"
+    fi
 
     if [[ $classic == y ]]; then
         # The degree symbol in the current locale.
@@ -191,14 +233,16 @@ main() {
     fi
 
     local items=() l_disk=0 l_name=1
-    local disk name temp lines line parser
+    local disk name temp lines line parser extra
     for disk; do
         [[ $disk == /dev/* ]] || continue
 
         # Collect disk field's width
         (( ${#disk} <= l_disk )) || l_disk=${#disk}
 
-        readarray -t lines < <(smartctl -i -A -l scttempsts "$disk" 2>&1)
+        extra=()
+        test -z "${hint_map[$disk]:-}" || extra+=(-d "$_")
+        readarray -t lines < <(smartctl -i -A -l scttempsts "${extra[@]}" "$disk" 2>&1)
 
         # There are three printers in smartctl overall: ataprint, nvmeprint,
         # scsiprint. Leverage the output formats peculiarities.

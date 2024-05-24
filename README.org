@@ -25,11 +25,30 @@ Without any disk arguments, show temperature for all sd and nvme disks.
 
 * Options
 
-- =--classic= :: Replicate output format of the original hddtemp
 - =-h, --help= :: Show usage
 - =-q= :: Suppress warnings
-- =-u, --units C|F= :: Use Celsius (default) or Fahrenheit scale
 - =-V, --version= :: Show version
+- =--classic= :: Replicate output format of the original hddtemp
+- =--hint path= :: Provide a file containing =smartctl --scan-open= output as a
+  hint for device types (=-d= option value for =smartctl=)
+- =-u, --units C|F= :: Use Celsius (default) or Fahrenheit scale
+
+Sometimes you could see question marks printed instead of info about some
+disk. It could mean =smartctl= failed to auto-detect the connection type. In the
+case, first scan your devices (it is important to use =--scan-open=, not just
+=--scan=):
+
+#+begin_example
+  sudo smartctl --scan-open | tee smart-scan.txt
+#+end_example
+
+Next, feed it to the =--hint= option:
+
+#+begin_example
+  sudo hddtemp-lt --hint smart-scan.txt
+#+end_example
+
+*Notice*: It is important to keep the hint file in sync with connected disks.
 
 By default, output is aligned into columns. Device models can contain spaces
 like /WDC WD10EFRX-68FYTN0/ or /Samsung SSD 950 PRO 256GB/ so fields are
