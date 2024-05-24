@@ -212,7 +212,11 @@ main() {
 
     if [[ $classic == y ]]; then
         # The degree symbol in the current locale.
-        scale=$(iconv -f utf-8 <<< $'\xc2\xb0')
+        scale=$(iconv -c -f utf-8 <<< $'\xc2\xb0')
+
+        # When there is no degree symbol in the current locale, use space
+        # instead, like the original tool did
+        [[ -n $scale ]] || scale=' '
 
         # °C / °F
         scale+=$units
