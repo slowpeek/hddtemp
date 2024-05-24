@@ -282,13 +282,13 @@ main() {
             fi
         fi
 
-        items+=("${disk}:" "${name:-?}" "${temp:-?}" "${temp:+$scale}")
+        items+=("${disk}:" "${name:-?}" "${temp:-?}${temp:+$scale}")
     done
 
     if [[ $classic = n ]]; then
-        printf "%-$((l_disk+1))s  %-${l_name}s  %s%s\n" "${items[@]}"
+        printf "%-$((l_disk+1))s  %-${l_name}s  %s\n" "${items[@]}"
     else
-        printf "%s %s: %s%s\n" "${items[@]}"
+        printf "%s %s: %s\n" "${items[@]}"
     fi
 }
 
