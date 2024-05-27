@@ -7,7 +7,7 @@
 
 set -eu
 
-SCRIPT_VERSION=0.2.5
+SCRIPT_VERSION=0.2.5+tcp
 SCRIPT_SELF=${BASH_SOURCE[0]##*/}
 
 if [[ -t 2 ]]; then
@@ -56,6 +56,7 @@ Options:
   -V, --version              Show version
 
   --classic                  Replicate output format of the original hddtemp
+  --classic-tcp              Replicate output format of the TCP daemon of the original hddtemp
   --hint path                Provide a file containing 'smartctl --scan-open'
                              output as a hint for device types (-d option value
                              for smartctl)
@@ -157,10 +158,10 @@ main() {
     local opts
 
     # jetopt .classic .hint: hhelp q uunits: Vversion
-    opts=$(getopt -o hqu:V -l classic,hint:,help,units:,version -- "$@") || exit
+    opts=$(getopt -o hqu:V -l classic,classic-tcp,hint:,help,units:,version -- "$@") || exit
     eval set -- "$opts"
 
-    local units=C classic=n scale= hint=
+    local units=C mode=default scale= hint=
 
     while (( $# )); do
         case $1 in
@@ -170,7 +171,11 @@ main() {
                 version ;;
 
             --classic)
-                classic=y
+                mode=classic
+                shift ;;
+
+            --classic-tcp)
+                mode=tcp
                 shift ;;
 
             --hint)
@@ -210,7 +215,7 @@ main() {
         parse_hint hint_map < "$hint"
     fi
 
-    if [[ $classic == y ]]; then
+    if [[ $mode == classic ]]; then
         # The degree symbol in the current locale.
         scale=$(iconv -c -f utf-8 <<< $'\xc2\xb0')
 
@@ -282,13 +287,21 @@ main() {
             fi
         fi
 
-        items+=("${disk}:" "${name:-?}" "${temp:-?}${temp:+$scale}")
+        if [[ $mode == tcp ]]; then
+            items+=("${disk}" "${name:-?}" "${temp:-?}" "${units}")
+        else
+            items+=("${disk}:" "${name:-?}" "${temp:-?}" "${temp:+$scale}")
+        fi
     done
 
-    if [[ $classic = n ]]; then
-        printf "%-$((l_disk+1))s  %-${l_name}s  %s\n" "${items[@]}"
+    if [[ $mode == default ]]; then
+        printf "%-$((l_disk+1))s  %-${l_name}s  %s%s\n" "${items[@]}"
+    elif  [[ $mode == classic ]]; then
+        printf "%s %s: %s%s\n" "${items[@]}"
+    elif  [[ $mode == tcp ]]; then
+        printf "|%s|%s|%s|%s|" "${items[@]}"
     else
-        printf "%s %s: %s\n" "${items[@]}"
+        bye "Unknown output mode"
     fi
 }
 
