@@ -7,7 +7,7 @@
 
 set -eu
 
-SCRIPT_VERSION=0.2.5+tcp
+SCRIPT_VERSION=0.2.5+git
 SCRIPT_SELF=${BASH_SOURCE[0]##*/}
 
 if [[ -t 2 ]]; then
@@ -56,7 +56,9 @@ Options:
   -V, --version              Show version
 
   --classic                  Replicate output format of the original hddtemp
-  --classic-tcp              Replicate output format of the TCP daemon of the original hddtemp
+  --classic-tcp              Replicate TCP daemon output format of the original
+                             hddtemp
+
   --hint path                Provide a file containing 'smartctl --scan-open'
                              output as a hint for device types (-d option value
                              for smartctl)
@@ -157,7 +159,7 @@ parse_hint() {
 main() {
     local opts
 
-    # jetopt .classic .hint: hhelp q uunits: Vversion
+    # jetopt .classic .classic-tcp .hint: hhelp q uunits: Vversion
     opts=$(getopt -o hqu:V -l classic,classic-tcp,hint:,help,units:,version -- "$@") || exit
     eval set -- "$opts"
 
@@ -242,7 +244,7 @@ main() {
     fi
 
     local items=() l_disk=0 l_name=1
-    local disk name temp lines line parser extra
+    local disk name temp lines line parser extra _units
     for disk; do
         [[ $disk == /dev/* ]] || continue
 
@@ -287,22 +289,33 @@ main() {
             fi
         fi
 
-        if [[ $mode == tcp ]]; then
-            items+=("${disk}" "${name:-?}" "${temp:-?}" "${units}")
-        else
-            items+=("${disk}:" "${name:-?}" "${temp:-?}" "${temp:+$scale}")
-        fi
+        case $mode in
+            classic)
+                items+=("${disk}" "${name:-?}" "${temp:-?}" "${temp:+$scale}") ;;
+            tcp)
+                # daemon.c from the original tool:
+                # - when the temp is not available, print the reason (NA, UNK,
+                # NOS, SLP, ERR) in the temp column and '*' in the units
+                # column. Let the reason be NA here
+                # - when the model is not detected, print '???'
+
+                _units=$units
+                [[ -n $temp ]] || _units='*'
+
+                items+=("${disk}" "${name:-???}" "${temp:-NA}" "$_units") ;;
+            *)
+                items+=("${disk}:" "${name:-?}" "${temp:-?}" "${temp:+$scale}") ;;
+        esac
     done
 
-    if [[ $mode == default ]]; then
-        printf "%-$((l_disk+1))s  %-${l_name}s  %s%s\n" "${items[@]}"
-    elif  [[ $mode == classic ]]; then
-        printf "%s %s: %s%s\n" "${items[@]}"
-    elif  [[ $mode == tcp ]]; then
-        printf "|%s|%s|%s|%s|" "${items[@]}"
-    else
-        bye "Unknown output mode"
-    fi
+    case $mode in
+        classic)
+            printf "%s: %s: %s%s\n" "${items[@]}" ;;
+        tcp)
+            printf "|%s|%s|%s|%s|" "${items[@]}" ;;
+        *)
+            printf "%-$((l_disk+1))s  %-${l_name}s  %s%s\n" "${items[@]}" ;;
+    esac
 }
 
 [[ ! ${BASH_SOURCE[0]##*/} == "${0##*/}" ]] || main "$@"

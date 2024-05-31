@@ -29,7 +29,7 @@ Without any disk arguments, show temperature for all sd and nvme disks.
 - =-q= :: Suppress warnings
 - =-V, --version= :: Show version
 - =--classic= :: Replicate output format of the original hddtemp
-- =--classic-tcp= :: Replicate output format of the TCP daemon of the original hddtemp
+- =--classic-tcp= :: Replicate TCP daemon output format of the original hddtemp
 - =--hint path= :: Provide a file containing =smartctl --scan-open= output as a
   hint for device types (=-d= option value for =smartctl=)
 - =-u, --units C|F= :: Use Celsius (default) or Fahrenheit scale
@@ -70,8 +70,8 @@ Sample /classic/ output:
 
 When =--classic-tcp= is applied:
 - output is not aligned, fields are separated with a pipe
-- there is no newline between the drives
-- scale marker is added
+- there are no newlines
+- units marker is a separate field
 
 Sample /classic-tcp/ output:
 
@@ -79,6 +79,12 @@ Sample /classic-tcp/ output:
   > sudo hddtemp-lt --classic-tcp
   |/dev/sda|WDC WD10EFRX-68FYTN0|28|C||/dev/nvme0|Samsung SSD 950 PRO 256GB|40|C|
 #+end_example
+
+Under [[systemd][systemd/]] you can find basic systemd unit files to run a hddtemp-compatible
+tcp server on port =7634=.
+
+*Notice*: =hddtemp-lt@.service= assumes the tool is installed into
+=/opt/hddtemp=.
 
 * Installation
 
