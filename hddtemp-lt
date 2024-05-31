@@ -243,7 +243,7 @@ main() {
         shopt -u nullglob
     fi
 
-    local items=() l_disk=0 l_name=1
+    local items=() l_disk=0 l_name=2
     local disk name temp lines line parser extra _units
     for disk; do
         [[ $disk == /dev/* ]] || continue
@@ -301,7 +301,7 @@ main() {
 
             items+=("${disk}" "${name:-???}" "${temp:-NA}" "$_units")
         else
-            items+=("${disk}" "${name:-?}" "${temp:-?}" "${temp:+$scale}")
+            items+=("${disk}" "${name:-NA}" "${temp:-NA}" "${temp:+$scale}")
         fi
     done
 
