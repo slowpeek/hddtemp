@@ -6,8 +6,8 @@ from the official repositories of Ubuntu (since 22.04) and Debian (since
 
 #+begin_example
   > sudo hddtemp-lt
-  /dev/sda:    WDC WD10EFRX-68FYTN0       28
-  /dev/nvme0:  Samsung SSD 950 PRO 256GB  40
+  /dev/sda    WDC WD10EFRX-68FYTN0       28
+  /dev/nvme0  Samsung SSD 950 PRO 256GB  40
 #+end_example
 
 * Requirements
@@ -53,11 +53,10 @@ Next, feed it to the =--hint= option:
 
 By default, output is aligned into columns. Device models can contain spaces
 like /WDC WD10EFRX-68FYTN0/ or /Samsung SSD 950 PRO 256GB/ so fields are
-separated with at least two spaces.
+separated by at least two spaces.
 
 When =--classic= is applied:
-- output is not aligned, fields are separated with a single space
-- there is a colon after disk models
+- output is not aligned, fields are separated by a colon followed by a space
 - scale marker is added
 
 Sample /classic/ output:
@@ -69,7 +68,7 @@ Sample /classic/ output:
 #+end_example
 
 When =--classic-tcp= is applied:
-- output is not aligned, fields are separated with a pipe
+- output is not aligned, fields are pipe separated
 - there are no newlines
 - units marker is a separate field
 
