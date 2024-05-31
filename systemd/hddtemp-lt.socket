@@ -1,0 +1,11 @@
+[Unit]
+Description=hddtemp-lt socket
+
+[Socket]
+ListenStream=7634
+Accept=yes
+IPAddressDeny=any
+IPAddressAllow=127.0.0.1
+
+[Install]
+WantedBy=sockets.target

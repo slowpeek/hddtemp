@@ -1,0 +1,12 @@
+[Unit]
+Description=hddtemp-lt service
+Requires=hddtemp-lt.socket
+
+[Service]
+Type=simple
+ExecStart=/opt/hddtemp/hddtemp-lt --classic-tcp
+StandardInput=socket
+TimeoutStopSec=5
+
+[Install]
+WantedBy=multi-user.target
