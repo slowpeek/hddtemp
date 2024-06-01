@@ -269,6 +269,15 @@ main() {
                     'Device Model:'*)
                         read -r _ _ name <<< "$line"
                         parser=ata
+
+                        if [[ $name == '[No Information Found]' ]]; then
+                            # Set non-empty name=NA (the same placeholder is
+                            # used below in the $items array) to explicitly
+                            # indicate the model data is not available, but
+                            # parsing for the temp should still proceed.
+                            name=NA
+                        fi
+
                         break ;;
                     'Model Number:'*)
                         read -r _ _ name <<< "$line"
