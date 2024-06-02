@@ -13,7 +13,7 @@ from the official repositories of Ubuntu (since 22.04) and Debian (since
 * Requirements
 
 - =smartctl= from =smartmontools= package
-  - NVMe support: =smartctl= v6.5+
+  - NVMe support: =smartctl= v6.5 /(Ubuntu 16.10, Debian 8 (backports))/ or higher
 
 * Usage
 
