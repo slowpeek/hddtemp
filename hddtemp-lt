@@ -63,7 +63,7 @@ Options:
                              output as a hint for device types (-d option value
                              for smartctl)
 
-  -n                         display only numeric value
+  -n, --numeric              Print only the temperature, unitless
 
   -u, --units C|F            Use Celsius (default) or Fahrenheit scale
 
@@ -161,8 +161,8 @@ parse_hint() {
 main() {
     local opts
 
-    # jetopt .classic .classic-tcp .hint: hhelp q uunits: Vversion
-    opts=$(getopt -o hnqu:V -l classic,classic-tcp,hint:,help,units:,version -- "$@") || exit
+    # jetopt .classic .classic-tcp nnumeric .hint: hhelp q uunits: Vversion
+    opts=$(getopt -o nhqu:V -l classic,classic-tcp,numeric,hint:,help,units:,version -- "$@") || exit
     eval set -- "$opts"
 
     local units=C mode=default scale= hint=
@@ -182,6 +182,10 @@ main() {
                 mode=tcp
                 shift ;;
 
+            -n|--numeric)
+                mode=numeric
+                shift ;;
+
             --hint)
                 hint=$2
                 shift 2 ;;
@@ -189,10 +193,6 @@ main() {
             -u|--units)
                 units=$2
                 shift 2 ;;
-
-            -n)
-                mode=numeric
-                shift ;;
 
             -q)
                 (( --verb )) || verb=1
