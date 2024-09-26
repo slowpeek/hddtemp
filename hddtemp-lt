@@ -63,6 +63,8 @@ Options:
                              output as a hint for device types (-d option value
                              for smartctl)
 
+  -n                         display only numeric value
+
   -u, --units C|F            Use Celsius (default) or Fahrenheit scale
 
 Homepage https://github.com/slowpeek/hddtemp
@@ -160,7 +162,7 @@ main() {
     local opts
 
     # jetopt .classic .classic-tcp .hint: hhelp q uunits: Vversion
-    opts=$(getopt -o hqu:V -l classic,classic-tcp,hint:,help,units:,version -- "$@") || exit
+    opts=$(getopt -o hnqu:V -l classic,classic-tcp,hint:,help,units:,version -- "$@") || exit
     eval set -- "$opts"
 
     local units=C mode=default scale= hint=
@@ -187,6 +189,10 @@ main() {
             -u|--units)
                 units=$2
                 shift 2 ;;
+
+            -n)
+                mode=numeric
+                shift ;;
 
             -q)
                 (( --verb )) || verb=1
@@ -307,7 +313,9 @@ main() {
             [[ -n $temp ]] || _units='*'
 
             items+=("${disk}" "${name:-???}" "${temp:-NA}" "$_units")
-        else
+        elif [[ $mode == numeric ]]; then
+            items+=("${temp:-NA}")
+	else
             items+=("${disk}" "${name:-NA}" "${temp:-NA}" "${temp:+$scale}")
         fi
     done
@@ -315,6 +323,8 @@ main() {
     case $mode in
         classic)
             printf "%s: %s: %s%s\n" "${items[@]}" ;;
+	numeric)
+            printf "%s\n" "${items[@]}" ;;
         tcp)
             printf "|%s|%s|%s|%s|" "${items[@]}" ;;
         *)
