@@ -315,7 +315,7 @@ main() {
             items+=("${disk}" "${name:-???}" "${temp:-NA}" "$_units")
         elif [[ $mode == numeric ]]; then
             items+=("${temp:-NA}")
-	else
+        else
             items+=("${disk}" "${name:-NA}" "${temp:-NA}" "${temp:+$scale}")
         fi
     done
@@ -323,7 +323,7 @@ main() {
     case $mode in
         classic)
             printf "%s: %s: %s%s\n" "${items[@]}" ;;
-	numeric)
+        numeric)
             printf "%s\n" "${items[@]}" ;;
         tcp)
             printf "|%s|%s|%s|%s|" "${items[@]}" ;;
