@@ -52,6 +52,17 @@ Next, feed it to the =--hint= option:
 
 *Notice*: It is important to keep the hint file in sync with connected disks.
 
+It is possible for =sudo smartctl --scan-open= to print nothing about your
+disk. It happens with devices not yet listed in some database =smartctl=
+uses. For example, as of Q3 2024, =smartctl= in a fully upgraded Ubuntu 22.04
+system does not recognize a Ugreen USB disk enclosure =0bda:9201=. In the case,
+you should craft a makeshift hint. If it is a generic USB disk enclosure, this
+would be it for a fictional =/dev/sdX=:
+
+#+begin_example
+  /dev/sdX -d sat
+#+end_example
+
 By default, output is aligned into columns. Device models can contain spaces
 like /WDC WD10EFRX-68FYTN0/ or /Samsung SSD 950 PRO 256GB/ so fields are
 separated by at least two spaces.
