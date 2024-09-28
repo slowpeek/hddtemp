@@ -7,7 +7,7 @@
 
 set -eu
 
-SCRIPT_VERSION=0.3+git
+SCRIPT_VERSION=0.3.1
 SCRIPT_SELF=${BASH_SOURCE[0]##*/}
 
 if [[ -t 2 ]]; then
