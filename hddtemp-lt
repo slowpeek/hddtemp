@@ -64,7 +64,6 @@ Options:
                              for smartctl)
 
   -n, --numeric              Print only the temperature, unitless
-
   -u, --units C|F            Use Celsius (default) or Fahrenheit scale
 
 Homepage https://github.com/slowpeek/hddtemp
