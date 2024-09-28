@@ -245,7 +245,8 @@ main() {
     local items=() l_disk=0 l_name=2
     local disk name temp lines line parser extra _units
     for disk; do
-        [[ $disk == /dev/* ]] || continue
+        [[ $disk == /dev/* ]] ||
+            bye "'${disk}' does not look like some disk device"
 
         # Collect disk field's width
         (( ${#disk} <= l_disk )) || l_disk=${#disk}
