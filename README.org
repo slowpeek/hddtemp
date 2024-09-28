@@ -32,6 +32,7 @@ Without any disk arguments, show temperature for all sd and nvme disks.
 - =--classic-tcp= :: Replicate TCP daemon output format of the original hddtemp
 - =--hint path= :: Provide a file containing =smartctl --scan-open= output as a
   hint for device types (=-d= option value for =smartctl=)
+- =-n, --numeric= :: Print only the temperature, unitless
 - =-u, --units C|F= :: Use Celsius (default) or Fahrenheit scale
 
 Sometimes you could see =NA= (/Not Available/) printed instead of info about
