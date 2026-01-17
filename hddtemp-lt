@@ -258,7 +258,7 @@ main() {
         else
             extra=()
             test -z "${hint_map[$disk]:-}" || extra+=(-d "$_")
-            readarray -t lines < <(smartctl -i -A -l scttempsts "${extra[@]}" "$disk" 2>&1)
+            readarray -t lines < <(smartctl -n standby -i -A -l scttempsts "${extra[@]}" "$disk" 2>&1)
 
             # There are three printers in smartctl overall: ataprint, nvmeprint,
             # scsiprint. Leverage the output formats peculiarities.
