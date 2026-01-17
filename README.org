@@ -36,9 +36,9 @@ Without any disk arguments, show temperature for all sd and nvme disks.
 - =-u, --units C|F= :: Use Celsius (default) or Fahrenheit scale
 
 Sometimes you could see =NA= (/Not Available/) printed instead of info about
-some disk. It could mean =smartctl= failed to auto-detect the connection
-type. In the case, first scan your devices (it is important to use
-=--scan-open=, not just =--scan=):
+some disk. It could mean the disk is in standby/sleep OR =smartctl= has failed
+to auto-detect the connection type. In the latter case, first scan your devices
+(it is important to use =--scan-open=, not just =--scan=):
 
 #+begin_example
   sudo smartctl --scan-open | tee smart-scan.txt
