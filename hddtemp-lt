@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC1007
 
-# MIT license (c) 2022-2024 https://github.com/slowpeek
+# MIT license (c) 2022-2026 https://github.com/slowpeek
 # Homepage: https://github.com/slowpeek/hddtemp
 # About: smartctl-based alternative to hddtemp
 
